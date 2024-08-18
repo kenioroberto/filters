@@ -1,123 +1,100 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Clientes cadastrados</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        table {
-            width: 80%; /* Definindo uma largura máxima para a tabela */
-            max-width: 800px; /* Largura máxima para a tabela */
-            margin: 0 auto; /* Centralizando a tabela */
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left; /* Alinhamento do texto */
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .badge {
-            display: inline-block;
-            padding: 0.25em 0.4em;
-            font-size: 75%;
-            font-weight: 700;
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-        .bg-label-primary {
-            color: #fff;
-            background-color: #007bff;
-        }
-        .bg-label-warning {
-            color: #fff;
-            background-color: #ffc107;
-        }
-        .bg-label-danger {
-            color: #fff;
-            background-color: #b60101;
-        }
-        .bg-label-secondary {
-            color: #fff;
-            background-color: #584f64;
-        }
-        .bg-label-success {
-            color: #fff;
-            background-color: #0c7804;
-        }
-        .footer {
-            margin-top: 20px;
-            text-align: right;
-            width: 80%; /* Correspondente à largura da tabela */
-            max-width: 800px; /* Correspondente à largura máxima da tabela */
-            margin: 0 auto; /* Centralizando o rodapé */
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-    </style>
+    <!-- Link para o CSS do Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
 </head>
 <body>
-    <div class="header">
-        <h3>Clientes cadastrados</h3>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header mb-4">
+            <h3>Clientes cadastrados</h3>
+        </div>
+         <!-- Seção de Filtros -->
+         <div class="header mb-4">
+            <form method="get" action="" class="w-100">
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        {{Myfilter.form.nome | as_crispy_field }} 
+                    </div>
+                    <div class="mb-3 col-md-2">
+                        {{Myfilter.form.cnpj | as_crispy_field }} 
+                    </div>
+                    <div class="mb-3 col-md-2">
+                        {{Myfilter.form.estado | as_crispy_field }} 
+                    </div>
+                    <div class="mb-3 col-md-2">
+                        {{Myfilter.form.tipo | as_crispy_field }} 
+                    </div>
+                    <div class="mb-3 col-md-2">
+                        {{Myfilter.form.ativo | as_crispy_field }} 
+                    </div>
+
+                    <div class="mb-0 col-md-1 d-flex align-items-center">
+                        <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+                    </div>
+                    
+                </div>
+                
+            </form>
+        </div>
+        
+   
+        <!-- Tabela -->
+        <table class="table table-success table-striped-columns">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                    <th>Estado</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes_list %}
+                <tr>
+                    <td><strong>{{ cliente.nome }}</strong></td>
+                    <td>{{ cliente.cnpj }}</td>
+                    <td>{{ cliente.estado }}</td>
+                    <td>
+                        {% if cliente.tipo == 'Varejo' %}
+                            <span class="badge badge-warning">Varejo</span>
+                        {% elif cliente.tipo == 'Atacado' %}
+                            <span class="badge badge-secondary">Atacado</span>
+                        {% elif cliente.tipo == 'Food' %}
+                            <span class="badge badge-primary">Food</span>
+                        {% elif cliente.tipo == 'Distribuidor' %}
+                            <span class="badge badge-success">Distribuidor</span>
+                        {% else %}
+                            Deu erro
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if cliente.ativo %}
+                            <span class="badge badge-success">Ativo</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inativo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Rodapé -->
+        <div class="footer">
+            Total de clientes: {{ clientes_list|length }}
+        </div>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>CNPJ</th>
-                <th>Estado</th>
-                <th>tipo</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cliente in clientes_list %}
-            <tr>
-                <td><strong>{{ cliente.nome }}</strong></td>
-                <td>{{ cliente.cnpj }}</td>
-                <td>{{ cliente.estado }}</td>
-                <td>
-                    {% if cliente.tipo == 'Varejo' %}
-                        <span class="badge bg-label-warning">Varejo</span>
-                    {% elif cliente.tipo == 'Atacado' %}
-                        <span class="badge bg-label-secondary">Atacado</span>
-                    {% elif cliente.tipo == 'Food' %}
-                        <span class="badge bg-label-primary">Food</span>
-                    {% elif cliente.tipo == 'Distribuidor' %}
-                        <span class="badge bg-label-success">Distribuidor</span>
-                    {% else %}
-                        Deu erro
-                    {% endif %}
-                </td>
-                <td>
-                    {% if cliente.ativo %}
-                        <span class="badge bg-label-success">Ativo</span>
-                    {% else %}
-                        <span class="badge bg-label-danger">Inativo</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <div class="footer">
-        Total de clientes: {{ clientes_list|length }}
-    </div>
+
+    <!-- Scripts do Bootstrap (opcional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
